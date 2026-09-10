@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Importador_ecbd.Aplicacao/Importador_ecbd.Aplicacao.csproj" Id="46c06222-3587-4706-a0d3-9cbc432def9c" />
+  <Project Path="Importador_ecbd.Dominio/Importador_ecbd.Dominio.csproj" Id="012e6931-30cb-4e3c-a122-45b0639ef73d" />
+  <Project Path="Importador_ecdb.Infra/Importador_ecdb.Infra.csproj" Id="60fa5745-0705-4541-a1a6-a1b04f4bba32" />
+  <Project Path="importador_ecdb/Importador_ecdb.UI.csproj" />
+</Solution>
