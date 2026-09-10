@@ -1,5 +1,4 @@
 ﻿using Dominio.Origem;
-using Importador_ecbd.Aplicacao.Dtos;
 
 namespace Importador_ecbd.Aplicacao.Interfaces;
 
