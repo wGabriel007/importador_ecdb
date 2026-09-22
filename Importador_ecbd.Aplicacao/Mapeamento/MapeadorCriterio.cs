@@ -17,7 +17,7 @@ public static class MapeadorCriterio
         {
             Id = origem.Id,
             CategoriaId = origem.ProjectCategoryId,
-            Nome = origem.Name,
+            Nome = origem.Name ?? string.Empty,
             Descricao = origem.Description,
             Peso = origem.Weight,
             Status = origem.StatusDefault,

@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Configuração local com senha do banco — não versionar (use appsettings.example.json como modelo)
+**/appsettings.json
+
+# Relatórios gerados pelo importador
+**/relatorios/

@@ -20,10 +20,10 @@ public static class MapeadorProjeto
             Id = origem.Id,
             CategoriaId = origem.ProjectCategoryId,
             InstituicaoId = origem.InstitutionId,
-            FeiraAfiliadaId = origem.AffiliatedTradeFairId ?? 0,
-            Titulo = origem.Title,
+            FeiraAfiliadaId = origem.AffiliatedTradeFairId, // null = projeto sem feira (antes ia 0 e quebrava a FK)
+            Titulo = origem.Title ?? string.Empty,
             Introducao = origem.Introduction ?? string.Empty,
-            Objetivo = origem.Objectives,
+            Objetivo = origem.Objectives ?? string.Empty,
             Metodologia = origem.Methodology ?? string.Empty,
             Resultado = origem.Results ?? string.Empty,
             Status = origem.Status,

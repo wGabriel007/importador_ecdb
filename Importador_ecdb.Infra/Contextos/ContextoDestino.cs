@@ -13,7 +13,7 @@ public class ContextoDestino : DbContext
         // Define timeout padrão de comandos em segundos para evitar timeouts curtos
         try
         {
-            Database.SetCommandTimeout(60);
+            Database.SetCommandTimeout(300); // leituras/gravações de tabelas grandes passam de 60s
         }
         catch
         {

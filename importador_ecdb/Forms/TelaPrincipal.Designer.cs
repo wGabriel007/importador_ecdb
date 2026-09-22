@@ -39,9 +39,10 @@ partial class TelaPrincipal
         // 
         // LabelStatus
         // 
-        LabelStatus.Location = new Point(275, 407);
+        LabelStatus.Location = new Point(12, 407);
         LabelStatus.Name = "LabelStatus";
-        LabelStatus.Size = new Size(47, 25);
+        LabelStatus.Size = new Size(600, 25);
+        LabelStatus.TextAlign = ContentAlignment.MiddleCenter;
         LabelStatus.TabIndex = 2;
         LabelStatus.Text = "Pronto";
         // 

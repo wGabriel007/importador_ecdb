@@ -1,15 +1,18 @@
-﻿using Importador_ecbd.Aplicacao.Interfaces;
-using Dominio.Destino;
+using System.Globalization;
 using Importador_ecbd.Aplicacao.Excecoes;
+using Importador_ecbd.Aplicacao.Interfaces;
+using Importador_ecbd.Dominio.Enums;
 using Infraestrutura.Contextos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using MySqlConnector;
 
 namespace Infraestrutura.Repositorios;
 
 /// <summary>
-/// Implementação de escrita no banco de dados NOVO. Cada método
-/// "Adicionar" só marca o registro para inserção (AddAsync) — a
-/// gravação de verdade só acontece em SalvarAlteracoesAsync.
+/// Implementação de escrita no banco de dados NOVO. Genérica: usa os
+/// metadados do EF Core (ContextoDestino) para descobrir tabela e chave
+/// de qualquer entidade.
 /// </summary>
 public class RepositorioDestino : IRepositorioDestino
 {
@@ -20,104 +23,59 @@ public class RepositorioDestino : IRepositorioDestino
         _contexto = contexto;
     }
 
-    public async Task AdicionarPaisAsync(Pais pais)
+    public string ObterNomeTabela<T>() where T : class
+        => ObterTipoEntidade<T>().GetTableName() ?? typeof(T).Name;
+
+    public string ObterChave<T>(T entidade) where T : class
     {
-        await _contexto.Pais.AddAsync(pais);
+        var chave = ObterTipoEntidade<T>().FindPrimaryKey()!;
+        return MontarChave(chave.Properties.Select(p => p.PropertyInfo!.GetValue(entidade)));
     }
 
-    public async Task AdicionarEstadoAsync(Estado estado)
+    public async Task<HashSet<string>> ObterChavesExistentesAsync<T>() where T : class
     {
-        await _contexto.Estados.AddAsync(estado);
+        var tipo = ObterTipoEntidade<T>();
+        var tabela = tipo.GetTableName()!;
+        var colunas = tipo.FindPrimaryKey()!.Properties
+            .Select(p => $"`{p.GetColumnName(StoreObjectIdentifier.Table(tabela, tipo.GetSchema()))}`")
+            .ToList();
+
+        var chaves = new HashSet<string>();
+        var conexao = _contexto.Database.GetDbConnection();
+        var abriuAqui = conexao.State != System.Data.ConnectionState.Open;
+
+        try
+        {
+            if (abriuAqui)
+                await conexao.OpenAsync();
+
+            await using var comando = conexao.CreateCommand();
+            // Busca só as colunas da chave (leve, mesmo em tabelas grandes)
+            comando.CommandText = $"SELECT {string.Join(", ", colunas)} FROM `{tabela}`";
+            comando.CommandTimeout = 300;
+
+            await using var leitor = await comando.ExecuteReaderAsync();
+            while (await leitor.ReadAsync())
+            {
+                var valores = new object?[colunas.Count];
+                for (int i = 0; i < colunas.Count; i++)
+                    valores[i] = leitor.IsDBNull(i) ? null : leitor.GetValue(i);
+
+                chaves.Add(MontarChave(valores));
+            }
+        }
+        finally
+        {
+            if (abriuAqui)
+                await conexao.CloseAsync();
+        }
+
+        return chaves;
     }
 
-    public async Task AdicionarCidadeAsync(Cidade cidade)
+    public void Adicionar<T>(T entidade) where T : class
     {
-        await _contexto.Cidades.AddAsync(cidade);
-    }
-
-    public async Task AdicionarPapelAsync(Papel papel)
-    {
-        await _contexto.Papels.AddAsync(papel);
-    }
-
-    public async Task AdicionarUsuarioAsync(Usuario usuario)
-    {
-        await _contexto.Usuarios.AddAsync(usuario);
-    }
-
-    public async Task AdicionarPermissaoAsync(Permissao permissao)
-    {
-        await _contexto.Permissaos.AddAsync(permissao);
-    }
-
-    public async Task AdicionarPermissaoUsuarioAsync(PermissaoUsuario permissaoUsuario)
-    {
-        await _contexto.PermissaoUsuarios.AddAsync(permissaoUsuario);
-    }
-
-    public async Task AdicionarAppPermissaoAsync(AppPermissao appPermissao)
-    {
-        await _contexto.AppPermissaos.AddAsync(appPermissao);
-    }
-
-    public async Task AdicionarFuncaoPermissaoAsync(FuncaoPermissao funcaoPermissao)
-    {
-        await _contexto.FuncaoPermissaos.AddAsync(funcaoPermissao);
-    }
-
-    public async Task AdicionarGreAsync(Gre gre)
-    {
-        await _contexto.Gres.AddAsync(gre);
-    }
-
-    public async Task AdicionarInstituicaoAsync(Instituicao instituicao)
-    {
-        await _contexto.Instituicaos.AddAsync(instituicao);
-    }
-
-    public async Task AdicionarInstituicaoUsuarioAsync(InstituicaoUsuario instituicaoUsuario)
-    {
-        await _contexto.InstituicaoUsuarios.AddAsync(instituicaoUsuario);
-    }
-
-    public async Task AdicionarAreaConhecimentoAsync(AreaConhecimento areaConhecimento)
-    {
-        await _contexto.AreaConhecimentos.AddAsync(areaConhecimento);
-    }
-
-    public async Task AdicionarCategoriaAsync(Categoria categoria)
-    {
-        await _contexto.Categorias.AddAsync(categoria);
-    }
-
-    public async Task AdicionarTemaAsync(Tema tema)
-    {
-        await _contexto.Temas.AddAsync(tema);
-    }
-
-    public async Task AdicionarCriterioAsync(Criterio criterio)
-    {
-        await _contexto.Criterios.AddAsync(criterio);
-    }
-
-    public async Task AdicionarFeiraAfiliadaAsync(FeiraAfiliada feiraAfiliada)
-    {
-        await _contexto.FeiraAfiliadas.AddAsync(feiraAfiliada);
-    }
-
-    public async Task AdicionarFeiraAreaAsync(FeiraArea feiraArea)
-    {
-        await _contexto.FeiraAreas.AddAsync(feiraArea);
-    }
-
-    public async Task AdicionarEditalFeiraAsync(EditalFeira editalFeira)
-    {
-        await _contexto.EditalFeiras.AddAsync(editalFeira);
-    }
-
-    public async Task AdicionarProjetoAsync(Projeto projeto)
-    {
-        await _contexto.Projetos.AddAsync(projeto);
+        _contexto.Set<T>().Add(entidade);
     }
 
     public async Task<int> SalvarAlteracoesAsync()
@@ -128,8 +86,54 @@ public class RepositorioDestino : IRepositorioDestino
         }
         catch (DbUpdateException ex)
         {
-            throw new ErroAoSalvarException(
-                ex.InnerException?.Message ?? ex.Message, ex);
+            var erroMySql = EncontrarErroMySql(ex);
+            var mensagem = erroMySql?.Message ?? ex.InnerException?.Message ?? ex.Message;
+            throw new ErroAoSalvarException(mensagem, ClassificarErro(erroMySql), ex);
         }
+        finally
+        {
+            // CORREÇÃO PRINCIPAL: sem isso, uma entidade que falhou continua no
+            // ChangeTracker como "Added" e é reenviada em TODOS os SaveChanges
+            // seguintes, fazendo todos os registros depois dela falharem também.
+            // Limpar após sucesso também mantém a memória baixa em tabelas grandes.
+            _contexto.ChangeTracker.Clear();
+        }
+    }
+
+    // ------------------------------------------------------------------
+
+    private IEntityType ObterTipoEntidade<T>() where T : class
+        => _contexto.Model.FindEntityType(typeof(T))
+           ?? throw new InvalidOperationException($"A entidade {typeof(T).Name} não está mapeada no ContextoDestino.");
+
+    private static string MontarChave(IEnumerable<object?> valores)
+        => string.Join("|", valores.Select(v => Convert.ToString(v, CultureInfo.InvariantCulture) ?? "<null>"));
+
+    private static MySqlException? EncontrarErroMySql(Exception ex)
+    {
+        for (Exception? atual = ex; atual != null; atual = atual.InnerException)
+        {
+            if (atual is MySqlException mysql)
+                return mysql;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Traduz o código de erro do MySQL para o motivo mostrado no relatório.
+    /// Lista de códigos: https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+    /// </summary>
+    private static EnumMotivoFalha ClassificarErro(MySqlException? erro)
+    {
+        return erro?.Number switch
+        {
+            1452 or 1451 or 1216 or 1217 => EnumMotivoFalha.ViolacaoDeChaveEstrangeira,
+            1062 or 1586                 => EnumMotivoFalha.ChaveDuplicada,
+            1048 or 1364                 => EnumMotivoFalha.ValorObrigatorioAusente,
+            1264 or 1265 or 1292 or 1366 or 1406 => EnumMotivoFalha.TipoDeDadoIncompativel,
+            1054                         => EnumMotivoFalha.ColunaNaoExisteNoDestino,
+            1146                         => EnumMotivoFalha.TabelaNaoExisteNoDestino,
+            _                            => EnumMotivoFalha.ErroDesconhecido
+        };
     }
 }

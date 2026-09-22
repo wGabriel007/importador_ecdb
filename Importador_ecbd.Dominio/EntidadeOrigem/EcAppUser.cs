@@ -10,8 +10,8 @@ namespace Dominio.Origem;
 public class EcAppUser
 {
     public int Id { get; set; }
-    public string Fullname { get; set; } = string.Empty;
-    public string Document { get; set; } = string.Empty;
+    public string? Fullname { get; set; }
+    public string? Document { get; set; }
     public int Score { get; set; }
     public int? LevelId { get; set; }
     public string? Email { get; set; }

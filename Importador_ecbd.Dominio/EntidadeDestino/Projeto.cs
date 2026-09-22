@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Dominio.Destino;
 
@@ -12,7 +12,7 @@ public class Projeto
     public int Id { get; set; }
     public int CategoriaId { get; set; }
     public int InstituicaoId { get; set; }
-    public int FeiraAfiliadaId { get; set; }
+    public int? FeiraAfiliadaId { get; set; }
     public string Titulo { get; set; } = string.Empty;
     public string Introducao { get; set; } = string.Empty;
     public string Objetivo { get; set; } = string.Empty;

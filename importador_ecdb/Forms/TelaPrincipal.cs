@@ -18,42 +18,49 @@ public partial class TelaPrincipal : Form
     {
         BotaoIniciarImportacao.Enabled = false;
 
-        var resumo = await _servicoImportacao.ObterResumoPreImportacaoAsync();
+        // "async void" em evento: qualquer exceção não tratada aqui fecha o programa.
+        // Por isso o try/catch envolve tudo e mostra o erro para o usuário.
+        try
+        {
+            LabelStatus.Text = "Contando registros da origem...";
+            var resumo = await _servicoImportacao.ObterResumoPreImportacaoAsync();
 
-        using var telaConfirmacao = new TelaConfirmacao(resumo);
-        var resultadoDialogo = telaConfirmacao.ShowDialog(this);
+            using var telaConfirmacao = new TelaConfirmacao(resumo);
+            var resultadoDialogo = telaConfirmacao.ShowDialog(this);
 
-        if (resultadoDialogo != DialogResult.OK)
+            if (resultadoDialogo != DialogResult.OK)
+            {
+                LabelStatus.Text = "Importação cancelada pelo usuário.";
+                return;
+            }
+
+            BarraProgresso.Value = 0;
+
+            var progresso = new Progress<ProgressoImportacao>(p =>
+            {
+                BarraProgresso.Maximum = Math.Max(1, p.TotalTabelas);
+                BarraProgresso.Value = Math.Clamp(p.TabelaAtualIndice, 0, BarraProgresso.Maximum);
+                LabelStatus.Text = $"Importando {p.NomeTabelaAtual}... ({p.TabelaAtualIndice}/{p.TotalTabelas})";
+            });
+
+            var resultado = await _servicoImportacao.ImportarAsync(progresso);
+
+            LabelStatus.Text = $"Importação concluída: {resultado.TotalRegistrosImportados} importados, " +
+                               $"{resultado.RegistrosComErro.Count} com erro.";
+
+            using var telaResultado = new TelaResultado(resultado);
+            telaResultado.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            LabelStatus.Text = "Erro na importação.";
+            MessageBox.Show(this,
+                $"Ocorreu um erro inesperado:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally
         {
             BotaoIniciarImportacao.Enabled = true;
-            LabelStatus.Text = "Importação cancelada pelo usuário.";
-            return;
         }
-
-        BarraProgresso.Value = 0;
-
-        var progresso = new Progress<ProgressoImportacao>(p =>
-        {
-            // Define o máximo dinamicamente com base no TotalTabelas reportado pelo serviço.
-            try
-            {
-                if (BarraProgresso.Maximum != p.TotalTabelas)
-                    BarraProgresso.Maximum = Math.Max(1, p.TotalTabelas);
-            }
-            catch { }
-
-            // Ajusta o valor de forma segura
-            var value = Math.Clamp(p.TabelaAtualIndice, 0, BarraProgresso.Maximum);
-            BarraProgresso.Value = value;
-            LabelStatus.Text = $"Importando {p.NomeTabelaAtual}... ({p.TabelaAtualIndice}/{p.TotalTabelas})";
-        });
-
-        var resultado = await _servicoImportacao.ImportarAsync(progresso);
-
-        LabelStatus.Text = "Importação concluída.";
-        BotaoIniciarImportacao.Enabled = true;
-
-        using var telaResultado = new TelaResultado(resultado);
-        telaResultado.ShowDialog(this);
     }
 }

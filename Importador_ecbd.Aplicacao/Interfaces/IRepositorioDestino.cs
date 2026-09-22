@@ -1,49 +1,42 @@
-﻿using Dominio.Destino;
-
 namespace Importador_ecbd.Aplicacao.Interfaces;
 
 /// <summary>
 /// Contrato de escrita no banco de dados NOVO (destino da importação).
-/// Cada método "Adicionar" prepara um registro para inserção; a gravação
-/// efetiva no banco só acontece ao chamar SalvarAlteracoesAsync — assim o
-/// ServicoImportacao controla quando cada registro é salvo (um a um,
-/// para isolar erros, conforme explicado no guia da etapa 4.6).
+/// É genérico: serve para qualquer entidade mapeada no ContextoDestino
+/// (Pais, Estado, Cidade, Usuario, Projeto...).
+///
+/// Fluxo usado pelo ServicoImportacao:
+///   1. ObterChavesExistentesAsync  -> descobre o que já está no destino (para não duplicar)
+///   2. Adicionar                   -> marca os registros para inserção
+///   3. SalvarAlteracoesAsync       -> grava de verdade
+///
+/// IMPORTANTE: SalvarAlteracoesAsync sempre limpa o ChangeTracker, com sucesso
+/// ou com erro. Assim um registro que falhou NÃO fica preso no contexto
+/// contaminando os próximos SaveChanges (era o bug que fazia a importação
+/// "parar" de importar a partir do primeiro erro).
+///
 /// Implementado em Infraestrutura/Repositorios/RepositorioDestino.cs.
 /// </summary>
 public interface IRepositorioDestino
 {
-    // ---- Localização ----
-    Task AdicionarPaisAsync(Pais pais);
-    Task AdicionarEstadoAsync(Estado estado);
-    Task AdicionarCidadeAsync(Cidade cidade);
+    /// <summary>
+    /// Retorna as chaves primárias (em texto, ex.: "15" ou "3|7" para chave
+    /// composta) de todos os registros que já existem na tabela de destino.
+    /// </summary>
+    Task<HashSet<string>> ObterChavesExistentesAsync<T>() where T : class;
 
-    // ---- Identidade e acesso ----
-    Task AdicionarPapelAsync(Papel papel);
-    Task AdicionarUsuarioAsync(Usuario usuario);
-    Task AdicionarPermissaoAsync(Permissao permissao);
-    Task AdicionarPermissaoUsuarioAsync(PermissaoUsuario permissaoUsuario);
-    Task AdicionarAppPermissaoAsync(AppPermissao appPermissao);
-    Task AdicionarFuncaoPermissaoAsync(FuncaoPermissao funcaoPermissao);
+    /// <summary>Monta a chave em texto de uma entidade, no mesmo formato de ObterChavesExistentesAsync.</summary>
+    string ObterChave<T>(T entidade) where T : class;
 
-    // ---- Estrutura educacional ----
-    Task AdicionarGreAsync(Gre gre);
-    Task AdicionarInstituicaoAsync(Instituicao instituicao);
-    Task AdicionarInstituicaoUsuarioAsync(InstituicaoUsuario instituicaoUsuario);
+    /// <summary>Nome da tabela de destino mapeada para a entidade.</summary>
+    string ObterNomeTabela<T>() where T : class;
 
-    // ---- Taxonomias ----
-    Task AdicionarAreaConhecimentoAsync(AreaConhecimento areaConhecimento);
-    Task AdicionarCategoriaAsync(Categoria categoria);
-    Task AdicionarTemaAsync(Tema tema);
-    Task AdicionarCriterioAsync(Criterio criterio);
+    /// <summary>Marca um registro para inserção (só grava em SalvarAlteracoesAsync).</summary>
+    void Adicionar<T>(T entidade) where T : class;
 
-    // ---- Feiras afiliadas ----
-    Task AdicionarFeiraAfiliadaAsync(FeiraAfiliada feiraAfiliada);
-    Task AdicionarFeiraAreaAsync(FeiraArea feiraArea);
-    Task AdicionarEditalFeiraAsync(EditalFeira editalFeira);
-
-    // ---- Projetos ----
-    Task AdicionarProjetoAsync(Projeto projeto);
-
-    /// <summary>Salva no banco de destino as alterações pendentes.</summary>
+    /// <summary>
+    /// Salva no banco de destino as alterações pendentes.
+    /// Em caso de falha lança ErroAoSalvarException já com o motivo classificado.
+    /// </summary>
     Task<int> SalvarAlteracoesAsync();
 }

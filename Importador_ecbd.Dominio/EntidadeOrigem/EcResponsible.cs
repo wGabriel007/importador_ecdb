@@ -11,6 +11,6 @@ public class EcResponsible
 {
     public int Id { get; set; }
     public int InstitutionUserId { get; set; }
-    public string ResppnsibleName { get; set; } = string.Empty;
-    public string ResponsibleEmail { get; set; } = string.Empty;
+    public string? ResppnsibleName { get; set; }
+    public string? ResponsibleEmail { get; set; }
 }

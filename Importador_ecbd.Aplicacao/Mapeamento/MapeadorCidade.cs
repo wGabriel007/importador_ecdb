@@ -11,8 +11,8 @@ public static class MapeadorCidade
         return new Cidade
         {
             Id = origem.Id,
-            EstadoId = origem.IdState ?? 0,
-            Nome = origem.Name,
+            EstadoId = origem.IdState, // null = sem estado (antes ia 0, que não existe e quebrava a FK)
+            Nome = origem.Name ?? string.Empty,
             Status = origem.StatusDefault ?? 0,
             CriadoEm = origem.CreatedAt ?? DateTime.UtcNow,
             AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt ?? DateTime.UtcNow

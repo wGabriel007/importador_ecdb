@@ -98,13 +98,22 @@ static class Program
             }
         }
 
+        // Banco antigo costuma ter datas "0000-00-00 00:00:00". Sem esta opção o
+        // MySqlConnector lança erro ao ler e a TABELA INTEIRA deixa de ser importada.
+        connOrigem = new MySqlConnector.MySqlConnectionStringBuilder(connOrigem)
+        {
+            ConvertZeroDateTime = true
+        }.ConnectionString;
+
         var servidorVersao = GetServerVersion(connOrigem);
 
         servicos.AddDbContext<ContextoOrigem>(opcoes =>
             opcoes.UseMySql(
                 connOrigem,
                 servidorVersao,
-                mySqlOptions => mySqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null)));
+                mySqlOptions => mySqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null))
+            // Faz o erro de leitura dizer QUAL coluna falhou (ex.: "EcCity.Name veio NULL")
+            .EnableDetailedErrors());
 
         // Se origem e destino usam servidores diferentes, tenta detectar para o destino também;
         // caso contrário reutiliza a versão já obtida.
@@ -135,7 +144,7 @@ static class Program
         Application.Run(provedor.GetRequiredService<TelaPrincipal>());
     }
 
-    private static string FindAppSettings(string startDir)
+    private static string? FindAppSettings(string startDir)
     {
         try
         {

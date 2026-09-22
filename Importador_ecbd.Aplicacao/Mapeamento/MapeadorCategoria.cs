@@ -17,7 +17,7 @@ public static class MapeadorCategoria
         return new Categoria
         {
             Id = origem.Id,
-            Nome = origem.Name,
+            Nome = origem.Name ?? string.Empty,
             Status = origem.StatusDefault,
             CriadoEm = origem.CreatedAt,
             AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt

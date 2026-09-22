@@ -13,8 +13,8 @@ public class EcRequestProjectMessage
     public int ProjectId { get; set; }
     public int RequesterId { get; set; }
     public int AnswererId { get; set; }
-    public string RequestMessage { get; set; } = string.Empty;
-    public string AwnserMessage { get; set; } = string.Empty;
+    public string? RequestMessage { get; set; }
+    public string? AwnserMessage { get; set; }
     public int Type { get; set; }
     public int StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }

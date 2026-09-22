@@ -11,8 +11,8 @@ public class EcCat
 {
     public int Id { get; set; }
     public int? FatherCategoryId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string FormatedName { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? FormatedName { get; set; }
     public int StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

@@ -17,10 +17,10 @@ public static class MapeadorPermissao
         {
             Id = origem.Id,
             PermissaoPaiId = origem.ParentId,
-            Titulo = origem.Title,
-            Icone = origem.Icon,
-            Acao = origem.ActionName,
-            NomeControlador = origem.ControllerName,
+            Titulo = origem.Title ?? string.Empty,
+            Icone = origem.Icon ?? string.Empty,
+            Acao = origem.ActionName ?? string.Empty,
+            NomeControlador = origem.ControllerName ?? string.Empty,
             Status = origem.StatusDefault,
             CriadoEm = origem.CreatedAt,
             AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt

@@ -12,8 +12,8 @@ public class EcLog
     public int Id { get; set; }
     public int? ApplicationUserId { get; set; }
     public string? ObjectJsonModel { get; set; }
-    public string ObjectType { get; set; } = string.Empty;
-    public string MessageAction { get; set; } = string.Empty;
+    public string? ObjectType { get; set; }
+    public string? MessageAction { get; set; }
     public string? ErrorMessage { get; set; }
     public DateTime CreatedAt { get; set; }
 }

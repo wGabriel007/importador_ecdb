@@ -16,5 +16,5 @@ public class EcAnnoAffi
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public int StatusDefault { get; set; }
-    public string ParticipationEdition { get; set; } = string.Empty;
+    public string? ParticipationEdition { get; set; }
 }

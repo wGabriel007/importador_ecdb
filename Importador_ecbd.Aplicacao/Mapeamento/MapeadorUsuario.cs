@@ -17,7 +17,7 @@ public static class MapeadorUsuario
         {
             Id = origem.Id,
             CidadeId = origem.CityId ?? origem.IdCity, 
-            NomeCompleto = origem.Fullname,
+            NomeCompleto = origem.Fullname ?? string.Empty,
             Genero = origem.GenderIdentify,
             Documento = origem.Document,
             Email = origem.Email ?? string.Empty,

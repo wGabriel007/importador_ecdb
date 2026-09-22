@@ -21,7 +21,7 @@ public static class MapeadorFeiraAfiliada
             // não como Id — precisa de correspondência por nome.
             CidadeId = null,
             InstituicaoId = origem.InstitutionId,
-            Nome = origem.Name,
+            Nome = origem.Name ?? string.Empty,
             Endereco = origem.Address,
             // TODO: origem.Range é texto livre ("Municipal", "Estadual"...),
             // destino.Alcance é int (enum) — precisa de tabela de conversão.

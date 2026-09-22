@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Dominio.Destino;
 
@@ -10,7 +10,7 @@ namespace Dominio.Destino;
 public class Cidade
 {
     public int Id { get; set; }
-    public int EstadoId { get; set; }
+    public int? EstadoId { get; set; }
     public string Nome { get; set; } = string.Empty;
     public int Status { get; set; }
     public DateTime CriadoEm { get; set; }

@@ -17,7 +17,7 @@ public static class MapeadorAreaConhecimento
         {
             Id = origem.Id,
             AreaPrincipalId = origem.MainAreaId,
-            Nome = origem.Name,
+            Nome = origem.Name ?? string.Empty,
             // TODO: origem.Type é texto livre, destino.Tipo é int (enum).
             // Precisa de uma tabela de conversão texto -> código.
             Tipo = null,
