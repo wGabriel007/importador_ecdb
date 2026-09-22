@@ -11,16 +11,16 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorFeiraAfiliada
 {
-    public static FeiraAfiliada Mapear(EcAffiliatedTradeFair origem)
+    public static FeiraAfiliada Mapear(EcAffiliatedTradeFair origem, MapaDeIds ids)
     {
         return new FeiraAfiliada
         {
-            Id = origem.Id,
-            UsuarioId = origem.OrganizerId,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            UsuarioId = ids.Traduzir<Usuario>(origem.OrganizerId),
             // TODO: origem guarda City/State/Country como texto livre,
             // não como Id — precisa de correspondência por nome.
             CidadeId = null,
-            InstituicaoId = origem.InstitutionId,
+            InstituicaoId = ids.TraduzirOpcional<Instituicao>(origem.InstitutionId),
             Nome = origem.Name ?? string.Empty,
             Endereco = origem.Address,
             // TODO: origem.Range é texto livre ("Municipal", "Estadual"...),

@@ -36,6 +36,42 @@ Também foram adicionados:
 ### 5. Relatório com nome errado
 O relatório usava o nome do método da lambda (`<>b__2`) como nome da tabela.
 
+## Ids novos no destino, com o Id antigo guardado
+
+Cada registro ganha um **Id novo**, gerado pelo `AUTO_INCREMENT` do banco novo, e o
+**Id antigo** fica na coluna **`iIdOrigem`** da própria tabela:
+
+```
+ec_tb_cidade
+iId  | iIdOrigem | iEstadoId | sNome
+1000 |     1     |    1000   | Recife     <- iEstadoId é o Id NOVO do estado
+```
+
+Como funciona:
+- **Coluna criada automaticamente:** antes de importar cada tabela, o importador confere
+  se o `iId` é `AUTO_INCREMENT` e cria `iIdOrigem` (com índice) se ela não existir. O que
+  foi alterado aparece em **AVISOS** no relatório. Se preferir criar as colunas antes, use
+  `scripts/adicionar_iIdOrigem.sql`.
+- **Chaves estrangeiras traduzidas:** o `MapaDeIds` guarda o de-para (Id antigo → Id novo)
+  de cada tabela já importada, e os mapeadores trocam toda FK (ex.:
+  `EstadoId = ids.TraduzirOpcional<Estado>(origem.IdState)`).
+- **Tabelas associativas** (`ec_tb_feira_area`, `ec_tb_funcao_permissao`,
+  `ec_tb_permissao_usuario`) não têm Id próprio: a chave delas passa a ser formada pelos
+  Ids novos das tabelas que elas ligam.
+- **Pai inexistente:** se o registro aponta para um pai que não foi importado, ele não é
+  gravado, e o relatório diz qual referência faltou (ex.: `Referência para Pais com Id de
+  origem 99, que não foi importado(a)`).
+- **Tabelas auto-referenciadas** (`ec_permissions`, `ec_area`) são importadas nível a
+  nível, porque o filho precisa do Id novo do pai.
+- **Rodar de novo:** o que já tem `iIdOrigem` no destino é pulado.
+  ⚠️ Linhas que já estavam no destino **sem** `iIdOrigem` (ex.: vindas da versão antiga do
+  importador, que copiava o Id) não são reconhecidas e seriam duplicadas. **Limpe o destino
+  antes da primeira importação com esta versão.**
+- **Buracos na numeração** (ex.: 36301, 36303) são normais: quando o MySQL desfaz um lote
+  com erro, ele não reaproveita os valores do `AUTO_INCREMENT`.
+- **Confirmar:** `Projeto.TemaProjeto` (origem `ProjectThemeId`) está sendo tratado como
+  referência a `ec_theme`. Se apontar para outra tabela, ajuste em `MapeadorProjeto`.
+
 ## Outras melhorias
 - **`ServicoImportacao` genérico:** os 19 métodos quase idênticos viraram uma rotina só
   (`ImportarTabelaAsync`). Para adicionar uma tabela nova, basta uma linha em `MontarEtapas()`.

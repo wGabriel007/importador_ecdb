@@ -10,12 +10,12 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorEditalFeira
 {
-    public static EditalFeira Mapear(EcAnnoAffi origem)
+    public static EditalFeira Mapear(EcAnnoAffi origem, MapaDeIds ids)
     {
         return new EditalFeira
         {
-            Id = origem.Id,
-            FeiraAfiliadaId = origem.AffiliatedTradeFairId,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            FeiraAfiliadaId = ids.Traduzir<FeiraAfiliada>(origem.AffiliatedTradeFairId),
             ConfirmacaoStatus = origem.ConfirmationStatus,
             EdicaoParticipacao = origem.ParticipationEdition,
             Status = origem.StatusDefault,

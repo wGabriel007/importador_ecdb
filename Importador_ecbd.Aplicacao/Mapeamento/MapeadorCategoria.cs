@@ -12,11 +12,11 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorCategoria
 {
-    public static Categoria Mapear(EcCat origem)
+    public static Categoria Mapear(EcCat origem, MapaDeIds ids)
     {
         return new Categoria
         {
-            Id = origem.Id,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
             Nome = origem.Name ?? string.Empty,
             Status = origem.StatusDefault,
             CriadoEm = origem.CreatedAt,

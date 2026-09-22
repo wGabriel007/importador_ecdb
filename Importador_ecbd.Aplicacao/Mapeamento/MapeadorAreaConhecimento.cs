@@ -6,7 +6,7 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// <summary>Converte ec_area (origem) em AreaConhecimento (destino).</summary>
 public static class MapeadorAreaConhecimento
 {
-    public static AreaConhecimento Mapear(EcArea origem)
+    public static AreaConhecimento Mapear(EcArea origem, MapaDeIds ids)
     {
         // ATENÇÃO: ec_area.StatusDefault veio como texto (string) no
         // dump original — provável erro de tipo no banco antigo (todas
@@ -15,8 +15,8 @@ public static class MapeadorAreaConhecimento
 
         return new AreaConhecimento
         {
-            Id = origem.Id,
-            AreaPrincipalId = origem.MainAreaId,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            AreaPrincipalId = ids.TraduzirOpcional<AreaConhecimento>(origem.MainAreaId),
             Nome = origem.Name ?? string.Empty,
             // TODO: origem.Type é texto livre, destino.Tipo é int (enum).
             // Precisa de uma tabela de conversão texto -> código.

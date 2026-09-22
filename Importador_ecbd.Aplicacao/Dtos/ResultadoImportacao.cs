@@ -21,6 +21,9 @@ public class ResultadoImportacao
     /// <summary>Números por tabela: lidos, importados, já existentes e com erro.</summary>
     public List<ResumoTabelaImportada> Tabelas { get; set; } = new();
 
+    /// <summary>Alterações feitas no banco de destino e outros alertas (ex.: coluna iIdOrigem criada).</summary>
+    public List<string> Avisos { get; set; } = new();
+
     public List<string> TabelasVazias { get; set; } = new();
     public List<ItemNaoImportado> TabelasNaoImportadas { get; set; } = new();
     public List<ItemNaoImportado> ColunasNaoImportadas { get; set; } = new();

@@ -333,5 +333,19 @@ public class ContextoDestino : DbContext
             entidade.Property(e => e.CriadoEm).HasColumnName("dtCriadoEm");
             entidade.Property(e => e.AtualizadoEm).HasColumnName("dtAtualizadoEm");
         });
+
+        // Toda entidade com Id próprio: o Id é gerado pelo banco (AUTO_INCREMENT)
+        // e o Id antigo fica na coluna iIdOrigem.
+        foreach (var tipo in modelBuilder.Model.GetEntityTypes()
+                     .Where(t => typeof(IEntidadeComIdOrigem).IsAssignableFrom(t.ClrType))
+                     .ToList())
+        {
+            modelBuilder.Entity(tipo.ClrType, entidade =>
+            {
+                entidade.Property(nameof(IEntidadeComIdOrigem.Id)).ValueGeneratedOnAdd();
+                entidade.Property(nameof(IEntidadeComIdOrigem.IdOrigem)).HasColumnName("iIdOrigem");
+                entidade.HasIndex(nameof(IEntidadeComIdOrigem.IdOrigem));
+            });
+        }
     }
 }

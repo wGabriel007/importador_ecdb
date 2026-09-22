@@ -31,6 +31,15 @@ public static class GeradorRelatorio
             sb.AppendLine($"{t.TabelaOrigem,-28} {t.TabelaDestino,-28} {t.Lidos,8} {t.Importados,8} {t.JaExistentes,9} {t.ComErro,7}");
         sb.AppendLine();
 
+        if (r.Avisos.Count > 0)
+        {
+            sb.AppendLine("AVISOS");
+            sb.AppendLine(new string('-', 90));
+            foreach (var a in r.Avisos)
+                sb.AppendLine($"• {a}");
+            sb.AppendLine();
+        }
+
         if (r.TabelasNaoImportadas.Count > 0)
         {
             sb.AppendLine("TABELAS NÃO IMPORTADAS");

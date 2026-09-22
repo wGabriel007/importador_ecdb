@@ -11,12 +11,12 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorCriterio
 {
-    public static Criterio Mapear(EcCriterion origem)
+    public static Criterio Mapear(EcCriterion origem, MapaDeIds ids)
     {
         return new Criterio
         {
-            Id = origem.Id,
-            CategoriaId = origem.ProjectCategoryId,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            CategoriaId = ids.TraduzirOpcional<Categoria>(origem.ProjectCategoryId),
             Nome = origem.Name ?? string.Empty,
             Descricao = origem.Description,
             Peso = origem.Weight,

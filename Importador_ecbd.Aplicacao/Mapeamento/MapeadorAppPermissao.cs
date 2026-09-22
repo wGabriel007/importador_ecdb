@@ -9,11 +9,11 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorAppPermissao
 {
-    public static AppPermissao Mapear(EcAppRole origem)
+    public static AppPermissao Mapear(EcAppRole origem, MapaDeIds ids)
     {
         return new AppPermissao
         {
-            Id = origem.Id,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
             Nome = origem.Name ?? string.Empty,
             Descricao = origem.Description,
             Status = origem.Status,

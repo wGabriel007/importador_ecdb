@@ -6,12 +6,12 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// <summary>Converte ec_institution (origem) em Instituicao (destino).</summary>
 public static class MapeadorInstituicao
 {
-    public static Instituicao Mapear(EcInstitution origem)
+    public static Instituicao Mapear(EcInstitution origem, MapaDeIds ids)
     {
         return new Instituicao
         {
-            Id = origem.Id,
-            GreId = origem.RegionalEducationAuthorityId,
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            GreId = ids.TraduzirOpcional<Gre>(origem.RegionalEducationAuthorityId),
             // TODO: a origem guarda City/State/Country como texto livre
             // (não como Id numérico) — não dá pra preencher CidadeId
             // automaticamente. Precisa de um passo de correspondência

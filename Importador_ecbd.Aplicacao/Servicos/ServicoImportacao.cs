@@ -3,6 +3,7 @@ using Importador_ecbd.Aplicacao.Excecoes;
 using Importador_ecbd.Aplicacao.Interfaces;
 using Importador_ecbd.Aplicacao.Mapeamento;
 using Importador_ecbd.Dominio.Enums;
+using Dominio.Destino;
 
 namespace Importador_ecbd.Aplicacao.Servicos;
 
@@ -17,6 +18,10 @@ namespace Importador_ecbd.Aplicacao.Servicos;
 ///   3. Pula os que já existem no destino (pode rodar a importação de novo sem duplicar).
 ///   4. Grava em lotes de <see cref="TamanhoLote"/>. Se um lote falhar, regrava
 ///      aquele lote registro a registro para isolar só os que têm problema.
+///
+/// IDs: o banco de destino gera um Id NOVO (AUTO_INCREMENT) para cada registro e o
+/// Id antigo fica na coluna iIdOrigem. Toda chave estrangeira é traduzida de Id
+/// antigo para Id novo pelo <see cref="MapaDeIds"/> (ex.: Cidade.EstadoId).
 /// </summary>
 public class ServicoImportacao : IServicoImportacao
 {
@@ -55,7 +60,7 @@ public class ServicoImportacao : IServicoImportacao
     }
 
     /// <summary>Uma etapa da importação = uma tabela de origem indo para uma tabela de destino.</summary>
-    private sealed record Etapa(string TabelaOrigem, string TabelaDestino, Func<ResultadoImportacao, Task> Executar);
+    private sealed record Etapa(string TabelaOrigem, string TabelaDestino, Func<ResultadoImportacao, MapaDeIds, Task> Executar);
 
     /// <summary>
     /// Lista de etapas NA ORDEM de importação. A ordem importa: uma tabela só pode
@@ -106,7 +111,7 @@ public class ServicoImportacao : IServicoImportacao
     private Etapa Criar<TOrigem, TDestino>(
         string tabelaOrigem,
         Func<Task<List<TOrigem>>> lerOrigem,
-        Func<TOrigem, TDestino> mapear,
+        Func<TOrigem, MapaDeIds, TDestino> mapear,
         Func<TOrigem, string> identificar,
         Func<TOrigem, int>? id = null,
         Func<TOrigem, int?>? paiId = null)
@@ -114,8 +119,8 @@ public class ServicoImportacao : IServicoImportacao
         where TDestino : class
     {
         var tabelaDestino = _repositorioDestino.ObterNomeTabela<TDestino>();
-        return new Etapa(tabelaOrigem, tabelaDestino, resultado =>
-            ImportarTabelaAsync(resultado, tabelaOrigem, tabelaDestino, lerOrigem, mapear, identificar, id, paiId));
+        return new Etapa(tabelaOrigem, tabelaDestino, (resultado, ids) =>
+            ImportarTabelaAsync(resultado, ids, tabelaOrigem, tabelaDestino, lerOrigem, mapear, identificar, id, paiId));
     }
 
     // ==================================================================
@@ -168,6 +173,7 @@ public class ServicoImportacao : IServicoImportacao
     {
         var resultado = new ResultadoImportacao { Inicio = DateTime.Now };
         var etapas = MontarEtapas();
+        var ids = new MapaDeIds(); // de-para Id antigo → Id novo, compartilhado entre as tabelas
 
         for (int i = 0; i < etapas.Count; i++)
         {
@@ -182,7 +188,7 @@ public class ServicoImportacao : IServicoImportacao
 
             try
             {
-                await etapa.Executar(resultado);
+                await etapa.Executar(resultado, ids);
                 resultado.TotalTabelasProcessadas++;
             }
             catch (Exception ex)
@@ -209,10 +215,11 @@ public class ServicoImportacao : IServicoImportacao
     /// </summary>
     private async Task ImportarTabelaAsync<TOrigem, TDestino>(
         ResultadoImportacao resultado,
+        MapaDeIds ids,
         string tabelaOrigem,
         string tabelaDestino,
         Func<Task<List<TOrigem>>> lerOrigem,
-        Func<TOrigem, TDestino> mapear,
+        Func<TOrigem, MapaDeIds, TDestino> mapear,
         Func<TOrigem, string> identificar,
         Func<TOrigem, int>? id,
         Func<TOrigem, int?>? paiId)
@@ -234,6 +241,9 @@ public class ServicoImportacao : IServicoImportacao
             });
         }
 
+        // Tabela com Id próprio (Id novo + iIdOrigem) ou associativa (chave composta)?
+        var temIdProprio = typeof(IEntidadeComIdOrigem).IsAssignableFrom(typeof(TDestino));
+
         // 1. Leitura da origem
         List<TOrigem> registros;
         try
@@ -252,58 +262,92 @@ public class ServicoImportacao : IServicoImportacao
         }
 
         resumo.Lidos = registros.Count;
+
+        // 2. O que já está no destino
+        HashSet<string>? chavesExistentes = null;
+        if (temIdProprio)
+        {
+            var aviso = await _repositorioDestino.PrepararColunaIdOrigemAsync<TDestino>();
+            if (aviso != null)
+                resultado.Avisos.Add(aviso);
+
+            // Carrega o de-para mesmo com a origem vazia: outras tabelas podem precisar dele
+            ids.Carregar<TDestino>(await _repositorioDestino.ObterMapaIdsAsync<TDestino>());
+        }
+        else
+        {
+            chavesExistentes = await _repositorioDestino.ObterChavesExistentesAsync<TDestino>();
+        }
+
         if (registros.Count == 0)
         {
             resultado.TabelasVazias.Add(tabelaOrigem);
             return;
         }
 
-        // 2. Nível de cada registro (só para tabelas que referenciam elas mesmas):
-        //    nível 0 = sem pai, nível 1 = filho de um nível 0, e assim por diante.
-        var nivelDe = (id != null && paiId != null)
-            ? CalcularNiveis(registros, id, paiId)
-            : null;
+        // 3. Níveis (só tabelas que referenciam elas mesmas): nível 0 = sem pai,
+        //    nível 1 = filho de um nível 0... Cada nível só é MAPEADO depois que o
+        //    anterior foi gravado, porque o filho precisa do Id NOVO do pai.
+        var niveis = (id != null && paiId != null)
+            ? CalcularNiveis(registros, id, paiId).GroupBy(par => par.Value, par => par.Key).OrderBy(g => g.Key).Select(g => g.ToList())
+            : new[] { registros };
 
-        // 3. Mapeamento + descarte do que já existe
-        var chavesExistentes = await _repositorioDestino.ObterChavesExistentesAsync<TDestino>();
-        var chavesDestaExecucao = new HashSet<string>();
-        var pendentes = new List<(TOrigem Origem, TDestino Destino, int Nivel)>();
+        var jaVistosNestaExecucao = new HashSet<string>();
 
-        foreach (var item in registros)
+        foreach (var registrosDoNivel in niveis)
         {
-            TDestino entidade;
-            try
+            var pendentes = new List<(TOrigem Origem, TDestino Destino)>();
+
+            foreach (var item in registrosDoNivel)
             {
-                entidade = mapear(item);
+                TDestino entidade;
+                try
+                {
+                    entidade = mapear(item, ids);
+                }
+                catch (ReferenciaNaoImportadaException ex)
+                {
+                    RegistrarErro(item, ex.Motivo, ex.Message);
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    RegistrarErro(item, EnumMotivoFalha.TipoDeDadoIncompativel, $"Erro ao converter o registro: {ex.Message}");
+                    continue;
+                }
+
+                string chave;
+                bool jaExiste;
+                if (entidade is IEntidadeComIdOrigem comId)
+                {
+                    var idOrigem = comId.IdOrigem!.Value;
+                    chave = idOrigem.ToString();
+                    jaExiste = ids.Contem<TDestino>(idOrigem);
+                }
+                else
+                {
+                    chave = _repositorioDestino.ObterChave(entidade);
+                    jaExiste = chavesExistentes!.Contains(chave);
+                }
+
+                if (jaExiste)
+                {
+                    resumo.JaExistentes++;
+                    continue;
+                }
+
+                if (!jaVistosNestaExecucao.Add(chave))
+                {
+                    RegistrarErro(item, EnumMotivoFalha.ChaveDuplicada,
+                        $"Registro duplicado na origem: outro registro de {tabelaOrigem} já gerou a chave '{chave}' em {tabelaDestino}.");
+                    continue;
+                }
+
+                pendentes.Add((item, entidade));
             }
-            catch (Exception ex)
-            {
-                RegistrarErro(item, EnumMotivoFalha.TipoDeDadoIncompativel, $"Erro ao converter o registro: {ex.Message}");
-                continue;
-            }
 
-            var chave = _repositorioDestino.ObterChave(entidade);
-
-            if (chavesExistentes.Contains(chave))
-            {
-                resumo.JaExistentes++;
-                continue;
-            }
-
-            if (!chavesDestaExecucao.Add(chave))
-            {
-                RegistrarErro(item, EnumMotivoFalha.ChaveDuplicada,
-                    $"Registro duplicado na origem: outro registro de {tabelaOrigem} já gerou a chave '{chave}' em {tabelaDestino}.");
-                continue;
-            }
-
-            pendentes.Add((item, entidade, nivelDe?[item] ?? 0));
-        }
-
-        // 4. Gravação em lotes, nível por nível
-        foreach (var nivel in pendentes.GroupBy(p => p.Nivel).OrderBy(g => g.Key))
-        {
-            foreach (var lote in nivel.Chunk(TamanhoLote))
+            // 4. Gravação em lotes
+            foreach (var lote in pendentes.Chunk(TamanhoLote))
             {
                 foreach (var p in lote)
                     _repositorioDestino.Adicionar(p.Destino);
@@ -311,21 +355,29 @@ public class ServicoImportacao : IServicoImportacao
                 try
                 {
                     await _repositorioDestino.SalvarAlteracoesAsync();
+                    foreach (var p in lote)
+                        RegistrarIdGerado(ids, p.Destino);
                     resumo.Importados += lote.Length;
                     continue;
                 }
                 catch (ErroAoSalvarException)
                 {
-                    // Algum registro do lote tem problema. O repositório já limpou o
-                    // contexto; regrava um a um para salvar os bons e isolar os ruins.
+                    // Algum registro do lote tem problema. O lote inteiro foi desfeito
+                    // (transação) e o repositório já limpou o contexto; regrava um a um
+                    // para salvar os bons e isolar os ruins.
                 }
 
                 foreach (var p in lote)
                 {
+                    // Descarta o Id que o EF possa ter preenchido na tentativa desfeita
+                    if (p.Destino is IEntidadeComIdOrigem comId)
+                        comId.Id = 0;
+
                     _repositorioDestino.Adicionar(p.Destino);
                     try
                     {
                         await _repositorioDestino.SalvarAlteracoesAsync();
+                        RegistrarIdGerado(ids, p.Destino);
                         resumo.Importados++;
                     }
                     catch (ErroAoSalvarException ex)
@@ -338,6 +390,13 @@ public class ServicoImportacao : IServicoImportacao
 
         resultado.TotalRegistrosImportados += resumo.Importados;
         resultado.TotalRegistrosJaExistentes += resumo.JaExistentes;
+    }
+
+    /// <summary>Depois do INSERT o EF preenche o Id gerado pelo banco: guarda Id antigo → Id novo.</summary>
+    private static void RegistrarIdGerado<TDestino>(MapaDeIds ids, TDestino entidade)
+    {
+        if (entidade is IEntidadeComIdOrigem comId && comId.IdOrigem.HasValue)
+            ids.Registrar<TDestino>(comId.IdOrigem.Value, comId.Id);
     }
 
     /// <summary>

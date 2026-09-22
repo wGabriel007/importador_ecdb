@@ -11,12 +11,12 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorUsuario
 {
-    public static Usuario Mapear(EcAppUser origem)
+    public static Usuario Mapear(EcAppUser origem, MapaDeIds ids)
     {
         return new Usuario
         {
-            Id = origem.Id,
-            CidadeId = origem.CityId ?? origem.IdCity, 
+            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            CidadeId = ids.TraduzirOpcional<Cidade>(origem.CityId ?? origem.IdCity),
             NomeCompleto = origem.Fullname ?? string.Empty,
             Genero = origem.GenderIdentify,
             Documento = origem.Document,

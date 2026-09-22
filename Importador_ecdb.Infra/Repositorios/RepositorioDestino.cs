@@ -73,6 +73,80 @@ public class RepositorioDestino : IRepositorioDestino
         return chaves;
     }
 
+    private const string ColunaIdOrigem = "iIdOrigem";
+
+    public async Task<string?> PrepararColunaIdOrigemAsync<T>() where T : class
+    {
+        var tipo = ObterTipoEntidade<T>();
+        var tabela = tipo.GetTableName()!;
+        var colunaId = tipo.FindPrimaryKey()!.Properties.Single()
+            .GetColumnName(StoreObjectIdentifier.Table(tabela, tipo.GetSchema()))!;
+
+        // 1. O Id novo depende do AUTO_INCREMENT: sem ele o INSERT falharia (ou gravaria 0)
+        var extra = await ExecutarEscalarAsync(
+            "SELECT EXTRA FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = @tabela AND COLUMN_NAME = @coluna",
+            ("@tabela", tabela), ("@coluna", colunaId));
+
+        if (extra == null)
+            throw new InvalidOperationException($"A tabela `{tabela}` (ou a coluna `{colunaId}`) não existe no banco de destino.");
+
+        if (!extra.ToString()!.Contains("auto_increment", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                $"A coluna `{tabela}`.`{colunaId}` não é AUTO_INCREMENT, então o banco não consegue gerar os Ids novos. " +
+                $"Ajuste com: ALTER TABLE `{tabela}` MODIFY `{colunaId}` INT NOT NULL AUTO_INCREMENT;");
+
+        // 2. Coluna iIdOrigem
+        var existe = Convert.ToInt32(await ExecutarEscalarAsync(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = @tabela AND COLUMN_NAME = @coluna",
+            ("@tabela", tabela), ("@coluna", ColunaIdOrigem)));
+
+        if (existe > 0)
+            return null;
+
+        var linhasAntes = Convert.ToInt32(await ExecutarEscalarAsync($"SELECT COUNT(*) FROM `{tabela}`"));
+
+        await _contexto.Database.ExecuteSqlRawAsync(
+            $"ALTER TABLE `{tabela}` ADD COLUMN `{ColunaIdOrigem}` INT NULL COMMENT 'Id do registro no banco de origem', " +
+            $"ADD INDEX `ix_{tabela}_{ColunaIdOrigem}` (`{ColunaIdOrigem}`)");
+
+        var aviso = $"Coluna `{ColunaIdOrigem}` criada em `{tabela}`.";
+        if (linhasAntes > 0)
+            aviso += $" ATENÇÃO: a tabela já tinha {linhasAntes} linha(s) sem Id de origem — se vieram de uma importação " +
+                     "anterior, elas serão importadas de novo (duplicadas). Limpe a tabela antes, se for o caso.";
+        return aviso;
+    }
+
+    public async Task<Dictionary<int, int>> ObterMapaIdsAsync<T>() where T : class
+    {
+        var tipo = ObterTipoEntidade<T>();
+        var tabela = tipo.GetTableName()!;
+        var colunaId = tipo.FindPrimaryKey()!.Properties.Single()
+            .GetColumnName(StoreObjectIdentifier.Table(tabela, tipo.GetSchema()))!;
+
+        var mapa = new Dictionary<int, int>();
+        var conexao = _contexto.Database.GetDbConnection();
+        var abriuAqui = conexao.State != System.Data.ConnectionState.Open;
+        try
+        {
+            if (abriuAqui)
+                await conexao.OpenAsync();
+
+            await using var comando = conexao.CreateCommand();
+            comando.CommandText = $"SELECT `{ColunaIdOrigem}`, `{colunaId}` FROM `{tabela}` WHERE `{ColunaIdOrigem}` IS NOT NULL ORDER BY `{colunaId}`";
+            comando.CommandTimeout = 300;
+
+            await using var leitor = await comando.ExecuteReaderAsync();
+            while (await leitor.ReadAsync())
+                mapa.TryAdd(Convert.ToInt32(leitor.GetValue(0)), Convert.ToInt32(leitor.GetValue(1)));
+        }
+        finally
+        {
+            if (abriuAqui)
+                await conexao.CloseAsync();
+        }
+        return mapa;
+    }
+
     public void Adicionar<T>(T entidade) where T : class
     {
         _contexto.Set<T>().Add(entidade);
@@ -105,6 +179,35 @@ public class RepositorioDestino : IRepositorioDestino
     private IEntityType ObterTipoEntidade<T>() where T : class
         => _contexto.Model.FindEntityType(typeof(T))
            ?? throw new InvalidOperationException($"A entidade {typeof(T).Name} não está mapeada no ContextoDestino.");
+
+    private async Task<object?> ExecutarEscalarAsync(string sql, params (string Nome, object Valor)[] parametros)
+    {
+        var conexao = _contexto.Database.GetDbConnection();
+        var abriuAqui = conexao.State != System.Data.ConnectionState.Open;
+        try
+        {
+            if (abriuAqui)
+                await conexao.OpenAsync();
+
+            await using var comando = conexao.CreateCommand();
+            comando.CommandText = sql;
+            foreach (var (nome, valor) in parametros)
+            {
+                var p = comando.CreateParameter();
+                p.ParameterName = nome;
+                p.Value = valor;
+                comando.Parameters.Add(p);
+            }
+
+            var resultado = await comando.ExecuteScalarAsync();
+            return resultado is DBNull ? null : resultado;
+        }
+        finally
+        {
+            if (abriuAqui)
+                await conexao.CloseAsync();
+        }
+    }
 
     private static string MontarChave(IEnumerable<object?> valores)
         => string.Join("|", valores.Select(v => Convert.ToString(v, CultureInfo.InvariantCulture) ?? "<null>"));

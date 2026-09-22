@@ -31,6 +31,20 @@ public interface IRepositorioDestino
     /// <summary>Nome da tabela de destino mapeada para a entidade.</summary>
     string ObterNomeTabela<T>() where T : class;
 
+    /// <summary>
+    /// Para tabelas com Id próprio: confere se o iId é AUTO_INCREMENT e cria a
+    /// coluna iIdOrigem (com índice) se ela ainda não existir.
+    /// Retorna um aviso para o relatório quando alterou a tabela, ou null.
+    /// </summary>
+    Task<string?> PrepararColunaIdOrigemAsync<T>() where T : class;
+
+    /// <summary>
+    /// Para tabelas com Id próprio: pares Id de origem → Id novo que já estão no
+    /// destino (linhas com iIdOrigem preenchido). Usado para não duplicar e para
+    /// traduzir chaves estrangeiras.
+    /// </summary>
+    Task<Dictionary<int, int>> ObterMapaIdsAsync<T>() where T : class;
+
     /// <summary>Marca um registro para inserção (só grava em SalvarAlteracoesAsync).</summary>
     void Adicionar<T>(T entidade) where T : class;
 
