@@ -1,0 +1,24 @@
+<Project>
+  <!-- Copia qualquer appsettings.json encontrado para o diretório de saída ao compilar -->
+  <ItemGroup>
+	<None Update="**\appsettings.json">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<Content Update="**\appsettings.json">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+
+  <!-- Fallback: copia explicitamente appsettings.json do projeto Forms para a pasta de saída após o build -->
+  <Target Name="CopyAppSettingsToOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <AppSettingsSource>$(MSBuildThisFileDirectory)importador_ecdb\Forms\appsettings.json</AppSettingsSource>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <AppSettingsFile Include="$(AppSettingsSource)" Condition="Exists('$(AppSettingsSource)')" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(AppSettingsFile)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="@(AppSettingsFile) != ''" />
+  </Target>
+</Project>

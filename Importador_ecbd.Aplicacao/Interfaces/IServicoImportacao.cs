@@ -16,7 +16,7 @@ public interface IServicoImportacao
     /// <summary>
     /// Executa a importação completa.
     /// </summary>
-    Task<ResultadoImportacao> ImportarAsync();
+    Task<ResultadoImportacao> ImportarAsync(IProgress<ProgressoImportacao> progresso);
 }
 
 /// <summary>

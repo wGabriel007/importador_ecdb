@@ -12,5 +12,5 @@ public class ResumoPreImportacao
 public class ContagemTabela
 {
     public string NomeTabela { get; set; } = string.Empty;
-    public int QuatidadeRegistros { get; set; }
+    public int QuantidadeRegistros { get; set; }
 }

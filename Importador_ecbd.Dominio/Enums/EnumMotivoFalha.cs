@@ -18,7 +18,12 @@ public enum EnumMotivoFalha
     /// <summary>
     /// Caso algum valor obrigatório esteja ausente no Banco.
     /// </summary>
-    ValorObrigatorioAusente,   
+    ValorObrigatorioAusente,
+
+    /// <summary>
+    /// Caso algum valor tenha violação de chave estrangeira.
+    /// </summary>
+    ViolacaoDeChaveEstrangeira,
 
     /// <summary>
     /// Caso o tipo do Dado for incompativel no Banco.
@@ -28,5 +33,10 @@ public enum EnumMotivoFalha
     /// <summary>
     /// Caso algum erro desconhecido.
     /// </summary>
-    ErroDesconhecido
+    ErroDesconhecido,
+
+    /// <summary>
+    /// Caso algum erro de execução
+    /// </summary>
+    ErroExecucao
 }

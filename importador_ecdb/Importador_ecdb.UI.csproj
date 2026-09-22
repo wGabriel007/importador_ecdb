@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Importador_ecdb.Infra\Importador_ecdb.Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Forms\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
