@@ -72,4 +72,7 @@ public interface IRepositorioOrigem
     // ---- Sistema ----
     Task<List<EcEmail>> ObterEmailAsync();
     Task<List<EcLog>> ObterLogAsync();
+
+    // Conta registros de uma tabela pelo nome (usado para resumo pré-importação sem carregar todas as linhas)
+    Task<int> ContarPorTabelaAsync(string tabela);
 }

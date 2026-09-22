@@ -1,6 +1,6 @@
 ﻿using Dominio.Destino;
 
-namespace Aplicacao.Interfaces;
+namespace Importador_ecbd.Aplicacao.Interfaces;
 
 /// <summary>
 /// Contrato de escrita no banco de dados NOVO (destino da importação).

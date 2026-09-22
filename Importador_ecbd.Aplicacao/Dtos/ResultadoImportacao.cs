@@ -11,10 +11,10 @@ public class ResultadoImportacao
 {
     public int TotalTabelasProcessadas {  get; set; }
     public int TotalRegistrosImportados { get; set; }
-    public List<string> TabelaVazias { get; set; } = new();
+    public List<string> TabelasVazias { get; set; } = new();
     public List<ItemNaoImportado> TabelasNaoImportadas { get; set; } = new();
     public List<ItemNaoImportado> ColunasNaoImportadas { get; set; } = new();
-    public List<ItemNaoImportado> RegistrosComErro {  get; set; } = new();
+    public List<ItemNaoImportado> RegistrosComErro {  get; set; }    = new();
 }
 
 /// <summary>
