@@ -11,10 +11,10 @@ public class EcPermissions
 {
     public int Id { get; set; }
     public int? ParentId { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Icon { get; set; } = string.Empty;
-    public string ActionName { get; set; } = string.Empty;
-    public string ControllerName { get; set; } = string.Empty;
+    public string? Title { get; set; }
+    public string? Icon { get; set; }
+    public string? ActionName { get; set; }
+    public string? ControllerName { get; set; }
     public int Order { get; set; }
     public bool Action { get; set; }
     public bool Header { get; set; }

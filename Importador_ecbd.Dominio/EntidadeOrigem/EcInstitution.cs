@@ -11,17 +11,17 @@ public class EcInstitution
 {
     public int Id { get; set; }
     public int? RegionalEducationAuthorityId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Document { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
-    public string State { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
-    public string CorporativePhone { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? Document { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? Country { get; set; }
+    public string? Address { get; set; }
+    public string? CorporativePhone { get; set; }
     public string? SecondPhoneNumber { get; set; }
     public int Type { get; set; }
     public int NetworkType { get; set; }
-    public string ContactEmailAddress { get; set; } = string.Empty;
+    public string? ContactEmailAddress { get; set; }
     public int StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

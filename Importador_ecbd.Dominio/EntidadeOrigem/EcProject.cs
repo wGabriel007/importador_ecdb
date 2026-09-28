@@ -14,16 +14,16 @@ public class EcProject
     public int InstitutionId { get; set; }
     public int AnnouncementId { get; set; }
     public int? AffiliatedTradeFairId { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public string? Title { get; set; }
     public string? Introduction { get; set; }
-    public string Objectives { get; set; } = string.Empty;
+    public string? Objectives { get; set; }
     public string? Methodology { get; set; }
     public string? Results { get; set; }
     public int Status { get; set; }
     public int PresentationType { get; set; }
     public string? DescriptionCancel { get; set; }
     public bool IsParticipantsInSpecialEducationModality { get; set; }
-    public string Keywords { get; set; } = string.Empty;
+    public string? Keywords { get; set; }
     public bool IsDoesInPreInscription { get; set; }
     public string? Bibliography { get; set; }
     public string? VideoUrl { get; set; }

@@ -15,10 +15,10 @@ public class EcEvaluatorAnnouncement
     public int? OrientationProjectId { get; set; }
     public int EvaluateProjectCategoryId { get; set; }
     public bool HasInterestedInPhoneGroup { get; set; }
-    public string ParticipationFormat { get; set; } = string.Empty;
-    public string EvaluateType { get; set; } = string.Empty;
+    public string? ParticipationFormat { get; set; }
+    public string? EvaluateType { get; set; }
     public int Status { get; set; }
-    public string SelectedParticipationDatesWithPeriodsAsString { get; set; } = string.Empty;
+    public string? SelectedParticipationDatesWithPeriodsAsString { get; set; }
     public int? StatusDefault { get; set; }
     public int ReleaseStatus { get; set; }
 }

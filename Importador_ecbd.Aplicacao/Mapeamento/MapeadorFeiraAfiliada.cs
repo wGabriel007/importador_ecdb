@@ -11,37 +11,37 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorFeiraAfiliada
 {
-    public static FeiraAfiliada Mapear(EcAffiliatedTradeFair origem)
+    public static FeiraAfiliada Mapear(EcAffiliatedTradeFair origem, MapaDeIds ids)
     {
         return new FeiraAfiliada
         {
-            Id = origem.Id,
-            UsuarioId = origem.OrganizerId,
+            IdOrigem                  = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            UsuarioId                 = ids.Traduzir<Usuario>(origem.OrganizerId),
             // TODO: origem guarda City/State/Country como texto livre,
             // não como Id — precisa de correspondência por nome.
-            CidadeId = null,
-            InstituicaoId = origem.InstitutionId,
-            Nome = origem.Name,
-            Endereco = origem.Address,
+            CidadeId                  = null,
+            InstituicaoId             = ids.TraduzirOpcional<Instituicao>(origem.InstitutionId),
+            Nome                      = origem.Name ?? string.Empty,
+            Endereco                  = origem.Address,
             // TODO: origem.Range é texto livre ("Municipal", "Estadual"...),
             // destino.Alcance é int (enum) — precisa de tabela de conversão.
-            Alcance = null,
-            EscolasParticipantes = origem.ParticipationSchoolsQuantity,
-            AvaliadoNaFeira = origem.IsProjectsEvaluatedInFair ? 1 : 0,
-            DataInicioRealizacao = origem.StartRealizationDate,
-            DataFinalRealizacao = origem.EndRealizationDate,
+            Alcance                   = null,
+            EscolasParticipantes      = origem.ParticipationSchoolsQuantity,
+            AvaliadoNaFeira           = origem.IsProjectsEvaluatedInFair ? 1 : 0,
+            DataInicioRealizacao      = origem.StartRealizationDate,
+            DataFinalRealizacao       = origem.EndRealizationDate,
             // TODO: origem.Period é texto livre, destino.Periodo é int (enum).
-            Periodo = null,
-            QuantidadeProjetos = origem.ParticipationProjectsQuantity,
-            DescricaoProcessoSelecao = origem.SelectWorksProcessDescription,
+            Periodo                   = null,
+            QuantidadeProjetos        = origem.ParticipationProjectsQuantity,
+            DescricaoProcessoSelecao  = origem.SelectWorksProcessDescription,
             TipoParticipacaoEstudante = origem.StudentParticipationType,
-            JaParticipou = origem.ParticpatedAnotherYears ? 1 : 0,
-            DescricaoParticipacaoAno = origem.ParticipatedAnotherYearsDescription,
+            JaParticipou              = origem.ParticpatedAnotherYears ? 1 : 0,
+            DescricaoParticipacaoAno  = origem.ParticipatedAnotherYearsDescription,
             // TODO: sem coluna de origem clara para GrauEstudante.
-            GrauEstudante = null,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            GrauEstudante             = null,
+            Status                    = origem.StatusDefault,
+            CriadoEm                  = origem.CreatedAt,
+            AtualizadoEm              = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }

@@ -12,11 +12,11 @@ public class EcEvaluator
     public int Id { get; set; }
     public int ApplicationUserId { get; set; }
     public int FormationAreaId { get; set; }
-    public string State { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
-    public string LattesReferenceLink { get; set; } = string.Empty;
-    public string ActivityAreaDescription { get; set; } = string.Empty;
-    public string RelatedOrganOrinstitutionDescription { get; set; } = string.Empty;
+    public string? State { get; set; }
+    public string? City { get; set; }
+    public string? LattesReferenceLink { get; set; }
+    public string? ActivityAreaDescription { get; set; }
+    public string? RelatedOrganOrinstitutionDescription { get; set; }
     public bool HasParticipatedOnScienceYoungPreviously { get; set; }
     public int Degree { get; set; }
     public int StatusDefault { get; set; }

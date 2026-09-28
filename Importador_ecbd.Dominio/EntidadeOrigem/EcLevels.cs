@@ -11,7 +11,7 @@ public class EcLevels
 {
     public int Id { get; set; }
     public int RequiredScore { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public int StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

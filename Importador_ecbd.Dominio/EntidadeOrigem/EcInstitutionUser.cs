@@ -12,9 +12,9 @@ public class EcInstitutionUser
     public int Id { get; set; }
     public int InstitutionId { get; set; }
     public int ApplicationUserId { get; set; }
-    public string Reference { get; set; } = string.Empty;
+    public string? Reference { get; set; }
     public int Type { get; set; }
-    public string RegistrationId { get; set; } = string.Empty;
+    public string? RegistrationId { get; set; }
     public int? AcademicLevel { get; set; }
     public int? HasParticipatedPreviousCJ { get; set; }
     public string? PreviousCJ { get; set; }

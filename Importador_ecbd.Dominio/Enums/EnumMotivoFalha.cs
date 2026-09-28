@@ -38,5 +38,21 @@ public enum EnumMotivoFalha
     /// <summary>
     /// Caso algum erro de execução
     /// </summary>
-    ErroExecucao
+    ErroExecucao,
+
+    /// <summary>
+    /// Já existe um registro com a mesma chave primária/única no destino.
+    /// </summary>
+    ChaveDuplicada,
+
+    /// <summary>
+    /// Não foi possível ler a tabela no banco de origem (coluna inexistente,
+    /// NULL em coluna que o modelo considera obrigatória, data inválida...).
+    /// </summary>
+    FalhaNaLeituraDaOrigem,
+
+    /// <summary>
+    /// A tabela existe na origem, mas ainda não tem mapeamento para o destino.
+    /// </summary>
+    TabelaSemMapeamento
 }

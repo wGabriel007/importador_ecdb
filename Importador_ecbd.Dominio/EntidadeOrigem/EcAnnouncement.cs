@@ -10,8 +10,8 @@ namespace Dominio.Origem;
 public class EcAnnouncement
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? Description { get; set; }
     public int Status { get; set; }
     public DateTime InscriptionEndDate { get; set; }
     public DateTime InscriptionStartDate { get; set; }

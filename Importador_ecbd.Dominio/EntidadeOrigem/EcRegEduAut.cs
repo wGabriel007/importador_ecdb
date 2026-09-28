@@ -10,8 +10,8 @@ namespace Dominio.Origem;
 public class EcRegEduAut
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string FormattedName { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? FormattedName { get; set; }
     public int StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Dominio.Destino;
 
@@ -7,12 +7,17 @@ namespace Dominio.Destino;
 /// da importação). Propriedades em PascalCase limpo (sem o prefixo húngaro
 /// original) — gerado automaticamente a partir do dump SQL.
 /// </summary>
-public class Projeto
+public class Projeto : IEntidadeComIdOrigem
 {
+    /// <summary>Id NOVO (AUTO_INCREMENT do destino).</summary>
     public int Id { get; set; }
+
+    /// <summary>Id do registro no banco de origem (coluna iIdOrigem).</summary>
+    public int? IdOrigem { get; set; }
+
     public int CategoriaId { get; set; }
     public int InstituicaoId { get; set; }
-    public int FeiraAfiliadaId { get; set; }
+    public int? FeiraAfiliadaId { get; set; }
     public string Titulo { get; set; } = string.Empty;
     public string Introducao { get; set; } = string.Empty;
     public string Objetivo { get; set; } = string.Empty;

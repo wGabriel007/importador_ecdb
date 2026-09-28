@@ -11,9 +11,9 @@ public class EcArea
 {
     public int Id { get; set; }
     public int? MainAreaId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
-    public string StatusDefault { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? Type { get; set; }
+    public string? StatusDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

@@ -11,19 +11,19 @@ namespace Importador_ecbd.Aplicacao.Mapeamento;
 /// </summary>
 public static class MapeadorPermissao
 {
-    public static Permissao Mapear(EcPermissions origem)
+    public static Permissao Mapear(EcPermissions origem, MapaDeIds ids)
     {
         return new Permissao
         {
-            Id = origem.Id,
-            PermissaoPaiId = origem.ParentId,
-            Titulo = origem.Title,
-            Icone = origem.Icon,
-            Acao = origem.ActionName,
-            NomeControlador = origem.ControllerName,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            IdOrigem        = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            PermissaoPaiId  = ids.TraduzirOpcional<Permissao>(origem.ParentId),
+            Titulo          = origem.Title ?? string.Empty,
+            Icone           = origem.Icon ?? string.Empty,
+            Acao            = origem.ActionName ?? string.Empty,
+            NomeControlador = origem.ControllerName ?? string.Empty,
+            Status          = origem.StatusDefault,
+            CriadoEm        = origem.CreatedAt,
+            AtualizadoEm    = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }
