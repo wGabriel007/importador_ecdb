@@ -11,7 +11,7 @@ public static class MapeadorFuncaoPermissao
         return new FuncaoPermissao
         {
             AppPermissaoId = ids.Traduzir<AppPermissao>(origem.ApplicationRolesId),
-            PermissaoId = ids.Traduzir<Permissao>(origem.PermissionsId)
+            PermissaoId    = ids.Traduzir<Permissao>(origem.PermissionsId)
         };
     }
 }

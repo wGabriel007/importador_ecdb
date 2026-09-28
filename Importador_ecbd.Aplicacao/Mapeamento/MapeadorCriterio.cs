@@ -15,13 +15,13 @@ public static class MapeadorCriterio
     {
         return new Criterio
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            CategoriaId = ids.TraduzirOpcional<Categoria>(origem.ProjectCategoryId),
-            Nome = origem.Name ?? string.Empty,
-            Descricao = origem.Description,
-            Peso = origem.Weight,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
+            IdOrigem     = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            CategoriaId  = ids.TraduzirOpcional<Categoria>(origem.ProjectCategoryId),
+            Nome         = origem.Name ?? string.Empty,
+            Descricao    = origem.Description,
+            Peso         = origem.Weight,
+            Status       = origem.StatusDefault,
+            CriadoEm     = origem.CreatedAt,
             AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
         };
     }

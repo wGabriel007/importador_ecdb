@@ -16,10 +16,10 @@ public static class MapeadorCategoria
     {
         return new Categoria
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            Nome = origem.Name ?? string.Empty,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
+            IdOrigem     = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            Nome         = origem.Name ?? string.Empty,
+            Status       = origem.StatusDefault,
+            CriadoEm     = origem.CreatedAt,
             AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
         };
     }

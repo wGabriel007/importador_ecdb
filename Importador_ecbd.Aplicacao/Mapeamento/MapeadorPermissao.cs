@@ -15,15 +15,15 @@ public static class MapeadorPermissao
     {
         return new Permissao
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            PermissaoPaiId = ids.TraduzirOpcional<Permissao>(origem.ParentId),
-            Titulo = origem.Title ?? string.Empty,
-            Icone = origem.Icon ?? string.Empty,
-            Acao = origem.ActionName ?? string.Empty,
+            IdOrigem        = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            PermissaoPaiId  = ids.TraduzirOpcional<Permissao>(origem.ParentId),
+            Titulo          = origem.Title ?? string.Empty,
+            Icone           = origem.Icon ?? string.Empty,
+            Acao            = origem.ActionName ?? string.Empty,
             NomeControlador = origem.ControllerName ?? string.Empty,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            Status          = origem.StatusDefault,
+            CriadoEm        = origem.CreatedAt,
+            AtualizadoEm    = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }

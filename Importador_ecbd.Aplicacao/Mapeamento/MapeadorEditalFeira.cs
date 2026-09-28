@@ -14,13 +14,13 @@ public static class MapeadorEditalFeira
     {
         return new EditalFeira
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            FeiraAfiliadaId = ids.Traduzir<FeiraAfiliada>(origem.AffiliatedTradeFairId),
-            ConfirmacaoStatus = origem.ConfirmationStatus,
+            IdOrigem           = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            FeiraAfiliadaId    = ids.Traduzir<FeiraAfiliada>(origem.AffiliatedTradeFairId),
+            ConfirmacaoStatus  = origem.ConfirmationStatus,
             EdicaoParticipacao = origem.ParticipationEdition,
-            Status = origem.StatusDefault,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            Status             = origem.StatusDefault,
+            CriadoEm           = origem.CreatedAt,
+            AtualizadoEm       = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }

@@ -10,7 +10,7 @@ public static class MapeadorPermissaoUsuario
     {
         return new PermissaoUsuario
         {
-            UsuarioId = ids.Traduzir<Usuario>(origem.UserId),
+            UsuarioId    = ids.Traduzir<Usuario>(origem.UserId),
             AppPermissao = ids.Traduzir<global::Dominio.Destino.AppPermissao>(origem.RoleId)
         };
     }

@@ -13,11 +13,11 @@ public static class MapeadorAppPermissao
     {
         return new AppPermissao
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            Nome = origem.Name ?? string.Empty,
-            Descricao = origem.Description,
-            Status = origem.Status,
-            CriadoEm = origem.CreatedAt,
+            IdOrigem     = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            Nome         = origem.Name ?? string.Empty,
+            Descricao    = origem.Description,
+            Status       = origem.Status,
+            CriadoEm     = origem.CreatedAt,
             AtualizadoEm = origem.UpdatedAt
         };
     }

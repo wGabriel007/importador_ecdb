@@ -15,15 +15,15 @@ public static class MapeadorAreaConhecimento
 
         return new AreaConhecimento
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            IdOrigem        = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
             AreaPrincipalId = ids.TraduzirOpcional<AreaConhecimento>(origem.MainAreaId),
-            Nome = origem.Name ?? string.Empty,
+            Nome            = origem.Name ?? string.Empty,
             // TODO: origem.Type é texto livre, destino.Tipo é int (enum).
             // Precisa de uma tabela de conversão texto -> código.
-            Tipo = null,
-            Status = status,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            Tipo            = null,
+            Status          = status,
+            CriadoEm        = origem.CreatedAt,
+            AtualizadoEm    = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }

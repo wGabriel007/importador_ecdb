@@ -10,7 +10,7 @@ public static class MapeadorFeiraArea
     {
         return new FeiraArea
         {
-            FeiraAfiliadaId = ids.Traduzir<FeiraAfiliada>(origem.AffiliatedTradeFairsId),
+            FeiraAfiliadaId    = ids.Traduzir<FeiraAfiliada>(origem.AffiliatedTradeFairsId),
             AreaConhecimentoId = ids.Traduzir<AreaConhecimento>(origem.KnowledgeAreasId)
         };
     }

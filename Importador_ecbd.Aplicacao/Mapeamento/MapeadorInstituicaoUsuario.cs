@@ -10,16 +10,16 @@ public static class MapeadorInstituicaoUsuario
     {
         return new InstituicaoUsuario
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            InstituicaoId = ids.Traduzir<Instituicao>(origem.InstitutionId),
-            UsuarioId = ids.Traduzir<Usuario>(origem.ApplicationUserId),
-            Referencia = origem.Reference,
-            Tipo = origem.Type,
-            NivelAcademico = origem.AcademicLevel,
-            JaParticipouCj = origem.HasParticipatedPreviousCJ,
-            AnoParticipacaoCj = origem.PreviousCJ,
+            IdOrigem                  = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            InstituicaoId             = ids.Traduzir<Instituicao>(origem.InstitutionId),
+            UsuarioId                 = ids.Traduzir<Usuario>(origem.ApplicationUserId),
+            Referencia                = origem.Reference,
+            Tipo                      = origem.Type,
+            NivelAcademico            = origem.AcademicLevel,
+            JaParticipouCj            = origem.HasParticipatedPreviousCJ,
+            AnoParticipacaoCj         = origem.PreviousCJ,
             PossueExperienciaEmFeiras = origem.HasExternalFairExperience,
-            ExperienciaDeFeiras = origem.ExternalFairExperience
+            ExperienciaDeFeiras       = origem.ExternalFairExperience
         };
     }
 }

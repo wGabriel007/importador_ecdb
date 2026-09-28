@@ -21,33 +21,33 @@ public class ContextoDestino : DbContext
         }
     }
 
-    public DbSet<AppPermissao> AppPermissaos => Set<AppPermissao>();
-    public DbSet<AreaConhecimento> AreaConhecimentos => Set<AreaConhecimento>();
-    public DbSet<Categoria> Categorias => Set<Categoria>();
-    public DbSet<Cidade> Cidades => Set<Cidade>();
-    public DbSet<Criterio> Criterios => Set<Criterio>();
-    public DbSet<EditalFeira> EditalFeiras => Set<EditalFeira>();
-    public DbSet<Estado> Estados => Set<Estado>();
-    public DbSet<FeiraAfiliada> FeiraAfiliadas => Set<FeiraAfiliada>();
-    public DbSet<FeiraArea> FeiraAreas => Set<FeiraArea>();
-    public DbSet<FuncaoPermissao> FuncaoPermissaos => Set<FuncaoPermissao>();
-    public DbSet<Gre> Gres => Set<Gre>();
-    public DbSet<Instituicao> Instituicaos => Set<Instituicao>();
+    public DbSet<AppPermissao> AppPermissaos             => Set<AppPermissao>();
+    public DbSet<AreaConhecimento> AreaConhecimentos     => Set<AreaConhecimento>();
+    public DbSet<Categoria> Categorias                   => Set<Categoria>();
+    public DbSet<Cidade> Cidades                         => Set<Cidade>();
+    public DbSet<Criterio> Criterios                     => Set<Criterio>();
+    public DbSet<EditalFeira> EditalFeiras               => Set<EditalFeira>();
+    public DbSet<Estado> Estados                         => Set<Estado>();
+    public DbSet<FeiraAfiliada> FeiraAfiliadas           => Set<FeiraAfiliada>();
+    public DbSet<FeiraArea> FeiraAreas                   => Set<FeiraArea>();
+    public DbSet<FuncaoPermissao> FuncaoPermissaos       => Set<FuncaoPermissao>();
+    public DbSet<Gre> Gres                               => Set<Gre>();
+    public DbSet<Instituicao> Instituicaos               => Set<Instituicao>();
     public DbSet<InstituicaoUsuario> InstituicaoUsuarios => Set<InstituicaoUsuario>();
-    public DbSet<Pais> Pais => Set<Pais>();
-    public DbSet<Papel> Papels => Set<Papel>();
-    public DbSet<Permissao> Permissaos => Set<Permissao>();
-    public DbSet<PermissaoUsuario> PermissaoUsuarios => Set<PermissaoUsuario>();
-    public DbSet<Projeto> Projetos => Set<Projeto>();
-    public DbSet<Tema> Temas => Set<Tema>();
-    public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Pais> Pais                              => Set<Pais>();
+    public DbSet<Papel> Papels                           => Set<Papel>();
+    public DbSet<Permissao> Permissaos                   => Set<Permissao>();
+    public DbSet<PermissaoUsuario> PermissaoUsuarios     => Set<PermissaoUsuario>();
+    public DbSet<Projeto> Projetos                       => Set<Projeto>();
+    public DbSet<Tema> Temas                             => Set<Tema>();
+    public DbSet<Usuario> Usuarios                       => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AppPermissao>(entidade =>
         {
             entidade.ToTable("ec_tb_app_permissao");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Descricao).HasColumnName("sDescricao");
@@ -59,7 +59,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<AreaConhecimento>(entidade =>
         {
             entidade.ToTable("ec_tb_area_conhecimento");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.AreaPrincipalId).HasColumnName("iAreaPrincipalId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
@@ -72,7 +72,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Categoria>(entidade =>
         {
             entidade.ToTable("ec_tb_categoria");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Status).HasColumnName("iStatus");
@@ -83,7 +83,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Cidade>(entidade =>
         {
             entidade.ToTable("ec_tb_cidade");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.EstadoId).HasColumnName("iEstadoId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
@@ -95,7 +95,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Criterio>(entidade =>
         {
             entidade.ToTable("ec_tb_criterio");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.CategoriaId).HasColumnName("iCategoriaId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
@@ -109,7 +109,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<EditalFeira>(entidade =>
         {
             entidade.ToTable("ec_tb_edital_feira");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.FeiraAfiliadaId).HasColumnName("iFeiraAfiliadaId");
             entidade.Property(e => e.ConfirmacaoStatus).HasColumnName("iConfirmacaoStatus");
@@ -122,7 +122,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Estado>(entidade =>
         {
             entidade.ToTable("ec_tb_estado");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.PaisId).HasColumnName("iPaisId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
@@ -135,7 +135,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<FeiraAfiliada>(entidade =>
         {
             entidade.ToTable("ec_tb_feira_afiliada");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.UsuarioId).HasColumnName("iUsuarioId");
             entidade.Property(e => e.CidadeId).HasColumnName("iCidadeId");
@@ -164,7 +164,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<FeiraArea>(entidade =>
         {
             entidade.ToTable("ec_tb_feira_area");
-            entidade.HasKey(e => new { e.FeiraAfiliadaId, e.AreaConhecimentoId });
+            entidade.HasKey(e   => new { e.FeiraAfiliadaId, e.AreaConhecimentoId });
             entidade.Property(e => e.FeiraAfiliadaId).HasColumnName("iFeiraAfiliadaId");
             entidade.Property(e => e.AreaConhecimentoId).HasColumnName("iAreaConhecimentoId");
         });
@@ -172,7 +172,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<FuncaoPermissao>(entidade =>
         {
             entidade.ToTable("ec_tb_funcao_permissao");
-            entidade.HasKey(e => new { e.AppPermissaoId, e.PermissaoId });
+            entidade.HasKey(e   => new { e.AppPermissaoId, e.PermissaoId });
             entidade.Property(e => e.AppPermissaoId).HasColumnName("iAppPermissaoId");
             entidade.Property(e => e.PermissaoId).HasColumnName("iPermissaoId");
         });
@@ -180,7 +180,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Gre>(entidade =>
         {
             entidade.ToTable("ec_tb_gre");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Status).HasColumnName("iStatus");
@@ -191,7 +191,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Instituicao>(entidade =>
         {
             entidade.ToTable("ec_tb_instituicao");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.GreId).HasColumnName("iGreId");
             entidade.Property(e => e.CidadeId).HasColumnName("iCidadeId");
@@ -215,7 +215,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<InstituicaoUsuario>(entidade =>
         {
             entidade.ToTable("ec_tb_instituicao_usuario");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.InstituicaoId).HasColumnName("iInstituicaoId");
             entidade.Property(e => e.UsuarioId).HasColumnName("iUsuarioId");
@@ -231,7 +231,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Pais>(entidade =>
         {
             entidade.ToTable("ec_tb_pais");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Status).HasColumnName("iStatus");
@@ -242,7 +242,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Papel>(entidade =>
         {
             entidade.ToTable("ec_tb_papel");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Descricao).HasColumnName("sDescricao");
@@ -254,7 +254,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Permissao>(entidade =>
         {
             entidade.ToTable("ec_tb_permissao");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.PermissaoPaiId).HasColumnName("iPermissaoPaiId");
             entidade.Property(e => e.Titulo).HasColumnName("sTitulo");
@@ -269,7 +269,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<PermissaoUsuario>(entidade =>
         {
             entidade.ToTable("ec_tb_permissao_usuario");
-            entidade.HasKey(e => new { e.UsuarioId, e.AppPermissao });
+            entidade.HasKey(e   => new { e.UsuarioId, e.AppPermissao });
             entidade.Property(e => e.UsuarioId).HasColumnName("iUsuarioId");
             entidade.Property(e => e.AppPermissao).HasColumnName("iAppPermissao");
         });
@@ -277,7 +277,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Projeto>(entidade =>
         {
             entidade.ToTable("ec_tb_projeto");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.CategoriaId).HasColumnName("iCategoriaId");
             entidade.Property(e => e.InstituicaoId).HasColumnName("iInstituicaoId");
@@ -306,7 +306,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Tema>(entidade =>
         {
             entidade.ToTable("ec_tb_tema");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.Nome).HasColumnName("sNome");
             entidade.Property(e => e.Status).HasColumnName("iStatus");
@@ -317,7 +317,7 @@ public class ContextoDestino : DbContext
         modelBuilder.Entity<Usuario>(entidade =>
         {
             entidade.ToTable("ec_tb_usuario");
-            entidade.HasKey(e => e.Id);
+            entidade.HasKey(e   => e.Id);
             entidade.Property(e => e.Id).HasColumnName("iId");
             entidade.Property(e => e.CidadeId).HasColumnName("iCidadeId");
             entidade.Property(e => e.NomeCompleto).HasColumnName("sNomeCompleto");

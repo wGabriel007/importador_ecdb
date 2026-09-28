@@ -15,20 +15,20 @@ public static class MapeadorUsuario
     {
         return new Usuario
         {
-            IdOrigem = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
-            CidadeId = ids.TraduzirOpcional<Cidade>(origem.CityId ?? origem.IdCity),
-            NomeCompleto = origem.Fullname ?? string.Empty,
-            Genero = origem.GenderIdentify,
-            Documento = origem.Document,
-            Email = origem.Email ?? string.Empty,
-            SenhaHash = origem.PasswordHash ?? string.Empty,
-            Telefone = origem.PhoneNumber,
-            DataNascimento = origem.BirthDay,
-            Pontuacao = origem.Score,
+            IdOrigem        = origem.Id, // o Id NOVO é gerado pelo banco (AUTO_INCREMENT)
+            CidadeId        = ids.TraduzirOpcional<Cidade>(origem.CityId ?? origem.IdCity),
+            NomeCompleto    = origem.Fullname ?? string.Empty,
+            Genero          = origem.GenderIdentify,
+            Documento       = origem.Document,
+            Email           = origem.Email ?? string.Empty,
+            SenhaHash       = origem.PasswordHash ?? string.Empty,
+            Telefone        = origem.PhoneNumber,
+            DataNascimento  = origem.BirthDay,
+            Pontuacao       = origem.Score,
             EmailConfirmado = origem.EmailConfirmed ? 1 : 0,
-            Status = origem.Status,
-            CriadoEm = origem.CreatedAt,
-            AtualizadoEm = origem.UpdatedAt ?? origem.CreatedAt
+            Status          = origem.Status,
+            CriadoEm        = origem.CreatedAt,
+            AtualizadoEm    = origem.UpdatedAt ?? origem.CreatedAt
         };
     }
 }
